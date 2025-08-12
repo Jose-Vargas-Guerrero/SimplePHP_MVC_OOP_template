@@ -23,6 +23,10 @@ namespace Views;
  */
 class Renderer
 {
+    private static function isDevMode()
+    {
+        return getenv('APP_ENV') === 'development';
+    }
     /**
      * Renderiza el documento html con los datos enviados
      *
@@ -60,43 +64,87 @@ class Renderer
 
         $viewsPath = "src/Views/templates/";
         $fileTemplate = $vista . ".view.tpl";
-        $htmlContent = "";
-        if (file_exists($viewsPath . $layoutFile)) {
-            $htmlContent = file_get_contents($viewsPath . $layoutFile);
-            if (file_exists($viewsPath . $fileTemplate)) {
-                $tmphtml = file_get_contents($viewsPath . $fileTemplate);
-                $htmlContent = str_replace(
-                    "{{{page_content}}}",
-                    $tmphtml,
-                    $htmlContent
-                );
-                //Cargar Otras plantillas
-                if(strpos($htmlContent, "{{include")){
-                    $htmlContent = self::loadPartials($htmlContent);
-                }
-                //Limpiar Saltos de Pagina
-                if (strpos($htmlContent, "<pre>")) {
-                } else {
-                    $htmlContent = str_replace("\n", "", $htmlContent);
-                    $htmlContent = str_replace("\r", "", $htmlContent);
-                    $htmlContent = str_replace("\t", "", $htmlContent);
-                    $htmlContent = str_replace("  ", "", $htmlContent);
-                }
-                //obtiene un arreglo separando lo distintos tipos de nodos
-                $template_code = self::_parseTemplate($htmlContent);
-                $htmlResult = self::_renderTemplate($template_code, $datos);
 
-                if ($render) {
-                    if($datos["USE_URLREWRITE"] == "1") {
-                        echo self::rewriteUrl($htmlResult);
-                    } else {
-                        echo $htmlResult;
-                    }
-                } else {
-                    return $htmlResult;
-                }
+        $cachePath = "src/Views/cache/";
+        if (!file_exists($cachePath)) {
+            mkdir($cachePath, 0755, true);
+        }
+        $cacheFile = $cachePath . md5($layoutFile . $fileTemplate) . ".php";
+
+        $sourceMtime = max(
+            filemtime($viewsPath . $layoutFile),
+            filemtime($viewsPath . $fileTemplate)
+        );
+        $cacheMtime = file_exists($cacheFile) ? filemtime($cacheFile) : 0;
+
+        $partialsMtime = 0;
+        if (file_exists($cacheFile . ".meta")) {
+            $partials = unserialize(file_get_contents($cacheFile . ".meta"));
+            foreach ($partials as $partial) {
+                $partialsMtime = max($partialsMtime, filemtime($partial));
             }
         }
+
+        if (self::isDevMode() || $sourceMtime > $cacheMtime || $partialsMtime > $cacheMtime) {
+            list($compiledTemplate, $partials) = self::_compileTemplate(
+                $viewsPath,
+                $layoutFile,
+                $fileTemplate
+            );
+            file_put_contents($cacheFile, $compiledTemplate);
+            file_put_contents($cacheFile . ".meta", serialize($partials));
+        }
+
+        ob_start();
+        extract($datos);
+        include $cacheFile;
+        $htmlResult = ob_get_clean();
+
+        if ($render) {
+            if ($datos["USE_URLREWRITE"] == "1") {
+                echo self::rewriteUrl($htmlResult);
+            } else {
+                echo $htmlResult;
+            }
+        } else {
+            return $htmlResult;
+        }
+    }
+
+    private static function _compileTemplate(
+        $viewsPath,
+        $layoutFile,
+        $fileTemplate
+    ) {
+        if (!file_exists($viewsPath . $layoutFile)) {
+            throw new \Exception("Layout file not found: " . $viewsPath . $layoutFile);
+        }
+        $htmlContent = file_get_contents($viewsPath . $layoutFile);
+
+        if (!file_exists($viewsPath . $fileTemplate)) {
+            throw new \Exception("View file not found: " . $viewsPath . $fileTemplate);
+        }
+        $tmphtml = file_get_contents($viewsPath . $fileTemplate);
+        $htmlContent = str_replace(
+            "{{{page_content}}}",
+            $tmphtml,
+            $htmlContent
+        );
+        //Cargar Otras plantillas
+        $partials = [];
+        if(strpos($htmlContent, "{{include")){
+            list($htmlContent, $partials) = self::loadPartials($htmlContent);
+        }
+        //Limpiar Saltos de Pagina
+        if (strpos($htmlContent, "<pre>")) {
+        } else {
+            $htmlContent = str_replace("\n", "", $htmlContent);
+            $htmlContent = str_replace("\r", "", $htmlContent);
+            $htmlContent = str_replace("\t", "", $htmlContent);
+            $htmlContent = str_replace("  ", "", $htmlContent);
+        }
+        $htmlResult = Compiler::compile($htmlContent);
+        return [$htmlResult, $partials];
     }
 
     /**
@@ -401,6 +449,7 @@ class Renderer
             PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
         );
         $htmlBuffer = "";
+        $partials = [];
         foreach($template_code as $block) {
             if (strpos($block, "include")) {
                 $filePath = trim(
@@ -410,6 +459,7 @@ class Renderer
                 if (file_exists($viewsPath . $filePath)) {
                     $htmlContent = file_get_contents($viewsPath . $filePath);
                     $htmlBuffer .= $htmlContent;
+                    $partials[] = $viewsPath . $filePath;
                 } else {
                     $htmlBuffer .= $block;
                 }
@@ -417,7 +467,7 @@ class Renderer
                 $htmlBuffer .= $block;
             }
         }
-        return $htmlBuffer;
+        return [$htmlBuffer, $partials];
     }
 
     public static function rewriteUrl($htmlTemplate)
