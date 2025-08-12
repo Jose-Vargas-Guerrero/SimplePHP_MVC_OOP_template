@@ -1,8 +1,8 @@
 <section class="grid flex align-center">
 <div class="col-3">
-  <form action="{{url}}" method="get" id="pagination">
+  <form action="{{url}}" method="get" id="pagination_{{identifier}}">
     <input type="hidden" name="page" value="{{page}}" />
-    <select name="itemsPerPage" id="itemsPerPage">
+    <select name="itemsPerPage" id="itemsPerPage_{{identifier}}">
       <option value="1" {{itemsPerPage_1}}>1</option>
       <option value="5" {{itemsPerPage_5}}>5</option>
       <option value="10" {{itemsPerPage_10}}>10</option>
@@ -22,8 +22,8 @@
 </section>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('itemsPerPage').addEventListener('change', function() {
-      document.getElementById('pagination').submit();
+    document.getElementById('itemsPerPage_{{identifier}}').addEventListener('change', function() {
+      document.getElementById('pagination_{{identifier}}').submit();
     });
   });
 </script>
