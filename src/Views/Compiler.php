@@ -18,15 +18,29 @@ class Compiler
     private static function compileVariables($htmlTemplate)
     {
         $pattern = '/\{\{\s*[&~]?(.*?)\s*\}\}/';
-        $replacement = '<?php echo htmlspecialchars($$1, ENT_QUOTES, \'UTF-8\'); ?>';
-        return preg_replace($pattern, $replacement, $htmlTemplate);
+        return preg_replace_callback($pattern, function ($matches) {
+            $variable = $matches[1];
+            $parts = explode('.', $variable);
+            $phpVar = '$' . array_shift($parts);
+            foreach ($parts as $part) {
+                $phpVar .= "['$part']";
+            }
+            return '<?php echo htmlspecialchars(' . $phpVar . ', ENT_QUOTES, \'UTF-8\'); ?>';
+        }, $htmlTemplate);
     }
 
     private static function compileIfs($htmlTemplate)
     {
         $pattern = '/\{\{\s*if\s+(.*?)\s*\}\}/';
-        $replacement = '<?php if ($$1): ?>';
-        $htmlTemplate = preg_replace($pattern, $replacement, $htmlTemplate);
+        $htmlTemplate = preg_replace_callback($pattern, function ($matches) {
+            $variable = $matches[1];
+            $parts = explode('.', $variable);
+            $phpVar = '$' . array_shift($parts);
+            foreach ($parts as $part) {
+                $phpVar .= "['$part']";
+            }
+            return '<?php if (' . $phpVar . '): ?>';
+        }, $htmlTemplate);
 
         $pattern = '/\{\{\s*endif\s*\}\}/';
         $replacement = '<?php endif; ?>';
@@ -36,8 +50,15 @@ class Compiler
     private static function compileIfNots($htmlTemplate)
     {
         $pattern = '/\{\{\s*ifnot\s+(.*?)\s*\}\}/';
-        $replacement = '<?php if (!($$1)): ?>';
-        $htmlTemplate = preg_replace($pattern, $replacement, $htmlTemplate);
+        $htmlTemplate = preg_replace_callback($pattern, function ($matches) {
+            $variable = $matches[1];
+            $parts = explode('.', $variable);
+            $phpVar = '$' . array_shift($parts);
+            foreach ($parts as $part) {
+                $phpVar .= "['$part']";
+            }
+            return '<?php if (!(' . $phpVar . ')): ?>';
+        }, $htmlTemplate);
 
         $pattern = '/\{\{\s*endifnot\s*\}\}/';
         $replacement = '<?php endif; ?>';
@@ -47,8 +68,16 @@ class Compiler
     private static function compileForeaches($htmlTemplate)
     {
         $pattern = '/\{\{\s*foreach\s+(.*?)\s+as\s+(.*?)\s*\}\}/';
-        $replacement = '<?php foreach ($$1 as $$2): ?>';
-        $htmlTemplate = preg_replace($pattern, $replacement, $htmlTemplate);
+        $htmlTemplate = preg_replace_callback($pattern, function ($matches) {
+            $variable = $matches[1];
+            $parts = explode('.', $variable);
+            $phpVar = '$' . array_shift($parts);
+            foreach ($parts as $part) {
+                $phpVar .= "['$part']";
+            }
+            $item = '$' . $matches[2];
+            return '<?php foreach (' . $phpVar . ' as ' . $item . '): ?>';
+        }, $htmlTemplate);
 
         $pattern = '/\{\{\s*endforeach\s*\}\}/';
         $replacement = '<?php endforeach; ?>';

@@ -9,12 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{BASE_DIR}}/public/css/appstyle.css" />
   <script src="https://kit.fontawesome.com/{{FONT_AWESOME_KIT}}.js" crossorigin="anonymous"></script>
-  {{foreach SiteLinks}}
-  <link rel="stylesheet" href="{{~BASE_DIR}}/{{this}}" />
-  {{endfor SiteLinks}}
-  {{foreach BeginScripts}}
-  <script src="{{~BASE_DIR}}/{{this}}"></script>
-  {{endfor BeginScripts}}
+  {{foreach SiteLinks as SiteLink}}
+  <link rel="stylesheet" href="{{~BASE_DIR}}/{{SiteLink}}" />
+  {{endfor}}
+  {{foreach BeginScripts as BeginScript}}
+  <script src="{{~BASE_DIR}}/{{BeginScript}}"></script>
+  {{endfor}}
 </head>
 
 <body>
@@ -29,15 +29,15 @@
     <nav id="menu">
       <ul>
         <li><a href="index.php?page={{PRIVATE_DEFAULT_CONTROLLER}}"><i class="fas fa-home"></i>&nbsp;Inicio</a></li>
-        {{foreach NAVIGATION}}
-            <li><a href="{{nav_url}}">{{nav_label}}</a></li>
-        {{endfor NAVIGATION}}
+        {{foreach NAVIGATION as nav_item}}
+            <li><a href="{{nav_item.nav_url}}">{{nav_item.nav_label}}</a></li>
+        {{endfor}}
         <li><a href="index.php?page=sec_logout"><i class="fas fa-sign-out-alt"></i>&nbsp;Salir</a></li>
       </ul>
     </nav>
-    {{with login}}
-    <span class="username">{{userName}} <a href="index.php?page=sec_logout"><i class="fas fa-sign-out-alt"></i></a></span>
-    {{endwith login}}
+    {{if login}}
+    <span class="username">{{login.userName}} <a href="index.php?page=sec_logout"><i class="fas fa-sign-out-alt"></i></a></span>
+    {{endif}}
   </header>
   <main>
     {{{page_content}}}
@@ -45,8 +45,8 @@
   <footer>
     <div>Todo los Derechos Reservados {{~CURRENT_YEAR}} &copy;</div>
   </footer>
-  {{foreach EndScripts}}
-  <script src="{{~BASE_DIR}}/{{this}}"></script>
-  {{endfor EndScripts}}
+  {{foreach EndScripts as EndScript}}
+  <script src="{{~BASE_DIR}}/{{EndScript}}"></script>
+  {{endfor}}
 </body>
 </html>

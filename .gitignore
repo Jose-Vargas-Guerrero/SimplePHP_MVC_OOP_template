@@ -8,3 +8,6 @@ data
 docs/manual_tecnico
 composer.lock
 phpdoc.dist.xml
+
+# View Cache
+src/Views/cache/
