@@ -38,7 +38,8 @@ SimplePHP_MVC_OOP
 |   ├── Utilities                           Clases de utilidad.
 |   └── Views
 |   |   ├── templates                       Carpeta que contiene las plantillas de las vistas.
-|   |   └── Renderer.php                    Clase para renderizar las vistas.
+|   |   ├── Renderer.php                    Clase para renderizar las vistas.
+|   |   └── Compiler.php                    Clase para generar el arhivo PHP cache generado de las Plantillas.
 ├── public                                  Carpeta pública del proyecto para recursos estáticos.
 │   ├── css                                 Carpeta para hojas de estilo.  
 │   ├── imgs                                Carpeta para imágenes.
