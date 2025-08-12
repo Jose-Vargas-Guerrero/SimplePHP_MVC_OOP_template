@@ -17,7 +17,7 @@
 <div class="col-6 flex flex-end">
 {{foreach pages as p}}
   <a {{if p.url}}href="{{p.url}}"{{endif}} class="w32 btn mx-2 {{if p.active}}depth-1 mx-3{{endif}}">{{p.page}}</a>
-{{endfor}}
+{{endforeach}}
 </div>
 </section>
 <script>

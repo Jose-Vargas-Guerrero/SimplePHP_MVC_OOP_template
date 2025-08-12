@@ -11,10 +11,10 @@
   <script src="https://kit.fontawesome.com/{{FONT_AWESOME_KIT}}.js" crossorigin="anonymous"></script>
   {{foreach SiteLinks as SiteLink}}
   <link rel="stylesheet" href="{{~BASE_DIR}}/{{SiteLink}}" />
-  {{endfor}}
+  {{endforeach}}
   {{foreach BeginScripts as BeginScript}}
   <script src="{{~BASE_DIR}}/{{BeginScript}}"></script>
-  {{endfor}}
+  {{endforeach}}
 </head>
 
 <body>
@@ -31,7 +31,7 @@
         <li><a href="index.php?page={{PRIVATE_DEFAULT_CONTROLLER}}"><i class="fas fa-home"></i>&nbsp;Inicio</a></li>
         {{foreach NAVIGATION as nav_item}}
             <li><a href="{{nav_item.nav_url}}">{{nav_item.nav_label}}</a></li>
-        {{endfor}}
+        {{endforeach}}
         <li><a href="index.php?page=sec_logout"><i class="fas fa-sign-out-alt"></i>&nbsp;Salir</a></li>
       </ul>
     </nav>
@@ -47,6 +47,6 @@
   </footer>
   {{foreach EndScripts as EndScript}}
   <script src="{{~BASE_DIR}}/{{EndScript}}"></script>
-  {{endfor}}
+  {{endforeach}}
 </body>
 </html>
