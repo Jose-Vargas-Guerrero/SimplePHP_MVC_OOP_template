@@ -1,5 +1,5 @@
 <section class="fullCenter">
-  <form class="grid" method="post" action="index.php?page=sec_login{{if redirto}}&redirto={{redirto}}{{endif redirto}}">
+  <form class="grid" method="post" action="index.php?page=sec_login{{if redirto}}&redirto={{redirto}}{{endif}}">
     <section class="depth-1 row col-12 col-m-8 offset-m-2 col-xl-6 offset-xl-3">
       <h1 class="col-12">Iniciar Sesión</h1>
     </section>
@@ -11,7 +11,7 @@
         </div>
         {{if errorEmail}}
           <div class="error col-12 py-2 col-m-8 offset-m-4">{{errorEmail}}</div>
-        {{endif errorEmail}}
+        {{endif}}
       </div>
       <div class="row">
         <label class="col-12 col-m-4 flex align-center" for="txtPswd">Contraseña</label>
@@ -20,13 +20,13 @@
         </div>
         {{if errorPswd}}
         <div class="error col-12 py-2 col-m-8 offset-m-4">{{errorPswd}}</div>
-        {{endif errorPswd}}
+        {{endif}}
       </div>
     {{if generalError}}
       <div class="row">
         {{generalError}}
       </div>
-    {{endif generalError}}
+    {{endif}}
     <div class="row right flex-end px-4">
       <button class="primary" id="btnLogin" type="submit">Iniciar Sesión</button>
     </div>

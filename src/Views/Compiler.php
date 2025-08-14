@@ -17,15 +17,16 @@ class Compiler
 
     private static function compileVariables($htmlTemplate)
     {
-        $pattern = '/\{\{\s*[&~]?(.*?)\s*\}\}/';
+        $pattern = '/\{\{\s*[&~!]?(?!if\b)(?!ifnot\b)(?!foreach\b)(?!endforeach\b)(?!endif\b)(?!endifnot\b)([^}]+?)\s*\}\}/';
         return preg_replace_callback($pattern, function ($matches) {
             $variable = $matches[1];
             $parts = explode('.', $variable);
-            $phpVar = '$' . array_shift($parts);
+            $rawFlag = strpos($matches[0], '!') > 0;
+            $phpVar = '$' . ltrim(array_shift($parts), '&~!');
             foreach ($parts as $part) {
                 $phpVar .= "['$part']";
             }
-            return '<?php echo htmlspecialchars(' . $phpVar . ', ENT_QUOTES, \'UTF-8\'); ?>';
+            return ($rawFlag ? '<?php echo ' . $phpVar . '; ?>'  : '<?php echo htmlspecialchars(' . $phpVar . ', ENT_QUOTES, \'UTF-8\'); ?>');
         }, $htmlTemplate);
     }
 

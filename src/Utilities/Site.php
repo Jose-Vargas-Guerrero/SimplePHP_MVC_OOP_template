@@ -10,6 +10,10 @@ class Site
         \Utilities\Context::setArrayToContext($donenv->load());
         date_default_timezone_set(\Utilities\Context::getContextByKey("TIMEZONE"));
         \Utilities\Context::setContext('CURRENT_YEAR', date("Y"));
+        // Initializing Sites Context
+        \Utilities\Context::setContext("BeginScripts", []);
+        \Utilities\Context::setContext("EndScripts", []);
+        \Utilities\Context::setContext("SiteLinks", []);
     }
     public static function getPageRequest()
     {

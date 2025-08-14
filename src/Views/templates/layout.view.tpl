@@ -28,7 +28,7 @@
       <ul>
         <li><a href="index.php?page={{PUBLIC_DEFAULT_CONTROLLER}}"><i class="fas fa-home"></i>&nbsp;Inicio</a></li>
         {{foreach PUBLIC_NAVIGATION as nav_item}}
-            <li><a href="{{nav_item.nav_url}}">{{nav_item.nav_label}}</a></li>
+            <li><a href="{{nav_item.nav_url}}">{{!nav_item.nav_label}}</a></li>
         {{endforeach}}
       </ul>
     </nav>

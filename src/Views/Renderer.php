@@ -10,6 +10,7 @@
  * @version  CVS:1.0.0
  * @link     http://
  */
+
 namespace Views;
 
 /**
@@ -25,7 +26,7 @@ class Renderer
 {
     private static function isDevMode()
     {
-        return getenv('APP_ENV') === 'development';
+        return \Utilities\Context::getContextByKey("DEVELOPMENT") === "1";
     }
     /**
      * Renderiza el documento html con los datos enviados
@@ -135,7 +136,7 @@ class Renderer
         );
         //Cargar Otras plantillas
         $partials = [];
-        if(strpos($htmlContent, "{{include")){
+        if (strpos($htmlContent, "{{include")) {
             list($htmlContent, $partials) = self::loadPartials($htmlContent);
         }
         //Limpiar Saltos de Pagina
@@ -168,11 +169,11 @@ class Renderer
         );
         $htmlBuffer = "";
         $partials = [];
-        foreach($template_code as $block) {
+        foreach ($template_code as $block) {
             if (strpos($block, "include")) {
                 $filePath = trim(
-                        str_replace("}}", "", str_replace("{{include", "", $block))
-                ). ".view.tpl";;
+                    str_replace("}}", "", str_replace("{{include", "", $block))
+                ) . ".view.tpl";;
                 $viewsPath = "src/Views/templates/";
                 if (file_exists($viewsPath . $filePath)) {
                     $htmlContent = file_get_contents($viewsPath . $filePath);
@@ -208,13 +209,13 @@ class Renderer
         foreach ($template_code as $node) {
             if (strpos($node, "index.php?page=")  !== false) {
                 $pageStart = strpos($node, "=") + 1;
-                $pageEnd = strpos($node, "&")?:strlen($node);
+                $pageEnd = strpos($node, "&") ?: strlen($node);
                 $pageValueLength = $pageEnd - $pageStart;
                 $page = substr($node, $pageStart, $pageValueLength);
                 $query = substr($node, $pageEnd + 1);
 
-                $url = $basedir . "/" . str_replace(array("_",".","-"), "/", $page);
-                $url .= strlen($query)?"/?".$query:"/";
+                $url = $basedir . "/" . str_replace(array("_", ".", "-"), "/", $page);
+                $url .= strlen($query) ? "/?" . $query : "/";
                 $htmlBuffer .= $url;
             } else {
                 if ($node == "index.php") {
@@ -229,8 +230,5 @@ class Renderer
     /**
      * Constructor privado evita instancia de esta clase
      */
-    private function __construct()
-    {
-
-    }
+    private function __construct() {}
 }

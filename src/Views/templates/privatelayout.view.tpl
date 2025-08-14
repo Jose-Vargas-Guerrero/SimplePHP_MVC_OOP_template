@@ -30,7 +30,7 @@
       <ul>
         <li><a href="index.php?page={{PRIVATE_DEFAULT_CONTROLLER}}"><i class="fas fa-home"></i>&nbsp;Inicio</a></li>
         {{foreach NAVIGATION as nav_item}}
-            <li><a href="{{nav_item.nav_url}}">{{nav_item.nav_label}}</a></li>
+            <li><a href="{{nav_item.nav_url}}">{{!nav_item.nav_label}}</a></li>
         {{endforeach}}
         <li><a href="index.php?page=sec_logout"><i class="fas fa-sign-out-alt"></i>&nbsp;Salir</a></li>
       </ul>

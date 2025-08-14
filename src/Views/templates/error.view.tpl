@@ -7,4 +7,4 @@
   <h2>{{ERROR_CODE}}</h2>
   <h3>{{ERROR_MSG}}</h3>
   <hr/>
-{{endif DEVELOPMENT}}
+{{endif}}

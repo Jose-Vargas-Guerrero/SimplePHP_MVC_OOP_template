@@ -11,7 +11,7 @@
         </div>
         {{if errorEmail}}
         <div class="error col-12 py-2 col-m-8 offset-m-4">{{errorEmail}}</div>
-        {{endif errorEmail}}
+        {{endif}}
       </div>
       <div class="row">
         <label class="col-12 col-m-4 flex align-center" for="txtPswd">Contraseña</label>
@@ -20,7 +20,7 @@
         </div>
         {{if errorPswd}}
         <div class="error col-12 py-2 col-m-8 offset-m-4">{{errorPswd}}</div>
-        {{endif errorPswd}}
+        {{endif}}
       </div>
       <div class="row right flex-end px-4">
         <button class="primary" id="btnSignin" type="submit">Crear Cuenta</button>
